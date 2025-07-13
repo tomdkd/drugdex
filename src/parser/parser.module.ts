@@ -4,10 +4,14 @@ import { FileService } from 'src/file/file.service';
 import { ParserService } from './parser.service';
 import * as fs from 'fs';
 import * as readline from 'readline';
+import { DatabaseModule } from 'src/database/database.module';
+import { MedsService } from 'src/database/services/meds.service';
+import { Med } from 'src/database/entities/med.entity';
+import { DeepPartial } from 'typeorm';
 
 @Module({
-  imports: [FileModule],
-  providers: [ParserService],
+  imports: [FileModule, DatabaseModule],
+  providers: [ParserService, MedsService],
 })
 export class ParserModule implements OnModuleInit {
   private readonly logger = new Logger(ParserModule.name);
@@ -15,6 +19,7 @@ export class ParserModule implements OnModuleInit {
   constructor(
     private readonly fileService: FileService,
     private readonly parserService: ParserService,
+    private readonly medsService: MedsService,
   ) {}
 
   async onModuleInit() {
@@ -30,13 +35,14 @@ export class ParserModule implements OnModuleInit {
 
     for await (const line of rl) {
       const lineSplitted = this.parserService.splitLine(line);
-      this.parserService.toMedLine(lineSplitted);
+      const med = this.parserService.toMedLine(lineSplitted);
+      this.medsService.insertOne(med as DeepPartial<Med>);
       linesCount++;
     }
 
     const timeEnd = Date.now();
     const timeTaken = (timeEnd - timeStart) / 1000;
 
-    this.logger.log(`Parsed ${linesCount} lines in ${timeTaken} seconds.`);
+    this.logger.log(`Parsed and saved ${linesCount} lines in ${timeTaken} seconds.`);
   }
 }

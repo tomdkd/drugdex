@@ -1,26 +1,19 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { databaseProvider } from './database.provider';
+import { MedsService } from './services/meds.service';
+import { medsProvider } from './meds/meds.provider';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get('POSTGRES_HOST'),
-        port: parseInt(config.get('POSTGRES_PORT') ?? '5432', 10),
-        username: config.get('POSTGRES_USER'),
-        password: config.get('POSTGRES_PASSWORD'),
-        database: config.get('POSTGRES_DB'),
-        autoLoadEntities: true,
-        synchronize: config.get('NODE_ENV') !== 'prod',
-      }),
-    }),
+  imports: [],
+  providers: [
+    ...databaseProvider,
+    ...medsProvider,
+    MedsService
+  ],
+  exports: [
+    ...databaseProvider,
+    ...medsProvider,
+    MedsService
   ],
 })
 export class DatabaseModule {}
