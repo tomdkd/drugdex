@@ -1,98 +1,83 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# DRUGDEX
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+DrugDex est un outil open-source d’indexation, de parsing et de recherche interactive de médicaments depuis des bases publiques (par exemple ANSM France).
+L’application propose une CLI, et une API pour une intégration facile dans n'importe quel outil.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Sommaire
+- [Fonctionalités](#fonctionnement)
+- [Configuration](#configuration)
+- [Installation](#installation)
+  - [Locale](#locale)
+  - [Docker](#docker)
+- [Structure du projet](#structure-du-projet)
+- [Contribuer](#contribuer)
 
-## Description
+## Fonctionalités
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+DrugDex est capable, dès son lancement, de récupérer les fichiers des médicaments disponibles sur le site du gouvernement français et de le parser pour qu'ils soient facilement indexables et exploitables.
 
-## Project setup
+Ainsi, il est possible de rechercher les médicaments en fonction de :
+- Leur identifiant
+- Leur nom
+- Leur disponibilité sur le marché
+- Le type du médicament
+- Le type de prise (voie orale, cutanée)
+- Le(s) propriétaire(s) du médicament
 
-```bash
-$ npm install
+## Configuration
+
+Récupérez le code de l'application en lançant les commandes :
+```
+git clone git@github.com:tomdkd/drugdex.git
+cd drugdex/
 ```
 
-## Compile and run the project
+À la racine du projet, vous trouverez le fichier `.env.example`. Renommez le en `.env`.
 
-```bash
-# development
-$ npm run start
+À l'intérieur de ce fichier, vous y trouverez plusieurs variables. Entrez-y les valeurs que vous souhaitez pour la configuration :
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+NODE_ENV=dev
+PORT=3000
+HOST=0.0.0.0 #Ne pas changer si vous utilisez Docker
+POSTGRES_HOST=drugdex-db
+POSTGRES_PORT=5432
+POSTGRES_USER=drugdex_user
+POSTGRES_PASSWORD=supersecret
+POSTGRES_DB=drugdex
+RELOAD_FILES=true
 ```
+*En mode `dev`, vous pouvez laisser la variable `RELOAD_FILES` à `true`. Cela vous permet de tester l'application sans stocker un nouveau fichier à chaque lancement. Si cette variable est à `false`, chaque démarrage de l'application entrainera le téléchargement et le parsing d'un nouveau fichier dans le dossier `files`.*
 
-## Deployment
+## Installation
+### Locale
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Si ce n'est pas déjà fait, placez vous à la racine du projet et commencez par lancer la commande `npm install` pour installer les dépendances.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Vérifiez que votre serveur PostgreSQL est disponible et accessible et que vous avez bien rentré les identifiants de connexion à la base de données.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Lancez ensuite la commande `npm run start:dev` pour lancer le serveur de développement.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+L'application est maintenant disponible sur `http://localhost:3000` pour l'API et en ligne de commande.
 
-## Resources
+### Docker
 
-Check out a few resources that may come in handy when working with NestJS:
+Comme pour la version locale, lancez la commande `npm install`. Cela vous permettra d'avoir l'auto complétion des librairies utilisées dans le projet.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Lancez ensuite la commande `docker compose up --build`.
 
-## Support
+L'application est maintenant disponible sur `http://localhost:3000` pour l'API et en ligne de commande.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Structure du projet
 
-## Stay in touch
+DrugDex a été pensé pour être modulaire et extensible.
+Il existe plusieurs types de fichiers sur le site du grouvernement, concernant les médicaments et le but est d'étendre ce service à l'Europe, puis à l'international.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Actuellement, il existe 3 modules : 
+- Database : Qui s'occupe de l'enregistrement et les requêtes en base de données pour tous les services qui en auront besoin.
 
-## License
+- File : Qui s'occupe de télécharger le(s) fichier(s) souhaités à l'interval souhaité et le(s) intégrer dans le dossier `files` qui se trouve à la racine du projet
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Parser : Qui va lire le fichier et préparer chaque ligne pour l'enregistrement en base de données (Actuellement, le benchmark montre 0,035 secondes pour un traitement de >25k lignes).
+
+## Contribuer
